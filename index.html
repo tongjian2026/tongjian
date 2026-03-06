@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通鉴探史 · 互动历史游戏</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --ink:#0a0a0f;
+  --ink2:#12121a;
+  --paper:#f5efe0;
+  --paper2:#ede4cc;
+  --gold:#c8960a;
+  --gold2:#e8b820;
+  --gold-light:rgba(200,150,10,0.15);
+  --red:#8b1a1a;
+  --blue:#1a3a6b;
+  --amber:#c47a1a;
+}
+
+html{scroll-behavior:smooth;}
+
+body{
+  background:var(--ink);
+  color:var(--paper);
+  font-family:'Noto Serif SC',serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── BACKGROUND ── */
+.bg-layer{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 20%, rgba(139,26,26,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 85% 80%, rgba(26,58,107,0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(200,150,10,0.04) 0%, transparent 70%);
+}
+
+/* ink wash strokes */
+.bg-layer::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(ellipse 2px 80px at 20% 30%, rgba(200,150,10,0.06) 0%, transparent 100%),
+    radial-gradient(ellipse 2px 120px at 75% 60%, rgba(200,150,10,0.04) 0%, transparent 100%),
+    radial-gradient(ellipse 1px 60px at 45% 80%, rgba(200,150,10,0.05) 0%, transparent 100%);
+}
+
+/* ── HERO ── */
+.hero{
+  position:relative;z-index:1;
+  text-align:center;
+  padding:80px 24px 60px;
+}
+
+.hero-eyebrow{
+  display:inline-block;
+  font-size:10px;letter-spacing:8px;
+  color:var(--gold);font-family:'Noto Sans SC',sans-serif;font-weight:700;
+  margin-bottom:24px;
+  opacity:0;animation:fadeUp 0.8s 0.1s forwards;
+}
+
+.hero-title{
+  font-size:clamp(38px, 8vw, 72px);
+  font-weight:900;
+  letter-spacing:12px;
+  color:var(--paper);
+  line-height:1.1;
+  margin-bottom:8px;
+  opacity:0;animation:fadeUp 0.8s 0.25s forwards;
+  text-shadow:0 0 60px rgba(200,150,10,0.2);
+}
+
+.hero-title em{
+  font-style:normal;
+  background:linear-gradient(135deg,var(--gold),var(--gold2),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.hero-sub{
+  font-size:13px;letter-spacing:4px;
+  color:rgba(245,239,224,0.45);
+  font-family:'Noto Sans SC',sans-serif;
+  margin-bottom:36px;
+  opacity:0;animation:fadeUp 0.8s 0.4s forwards;
+}
+
+.hero-desc{
+  max-width:520px;margin:0 auto 48px;
+  font-size:14px;line-height:2;
+  color:rgba(245,239,224,0.6);
+  font-family:'Noto Sans SC',sans-serif;
+  opacity:0;animation:fadeUp 0.8s 0.5s forwards;
+}
+
+.hero-divider{
+  display:flex;align-items:center;justify-content:center;
+  gap:16px;margin-bottom:16px;
+  opacity:0;animation:fadeUp 0.8s 0.55s forwards;
+}
+.hero-divider::before,.hero-divider::after{
+  content:'';width:80px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(200,150,10,0.4));
+}
+.hero-divider::after{transform:scaleX(-1);}
+.hero-divider span{font-size:14px;color:var(--gold);opacity:0.6;}
+
+/* ── THEME BADGE ── */
+.theme-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 18px;
+  border:1px solid rgba(200,150,10,0.3);
+  border-radius:1px;
+  font-size:11px;letter-spacing:3px;
+  color:rgba(200,150,10,0.7);
+  font-family:'Noto Sans SC',sans-serif;
+  margin-bottom:56px;
+  opacity:0;animation:fadeUp 0.8s 0.6s forwards;
+}
+
+/* ── CARDS ── */
+.cards-section{
+  position:relative;z-index:1;
+  max-width:1000px;margin:0 auto;
+  padding:0 24px 80px;
+}
+
+.section-label{
+  text-align:center;
+  font-size:10px;letter-spacing:6px;
+  color:rgba(200,150,10,0.5);
+  font-family:'Noto Sans SC',sans-serif;font-weight:700;
+  margin-bottom:32px;
+  opacity:0;animation:fadeUp 0.6s 0.7s forwards;
+}
+
+.cards-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;
+}
+
+.card{
+  position:relative;overflow:hidden;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(245,239,224,0.08);
+  border-radius:2px;
+  cursor:pointer;
+  text-decoration:none;
+  display:block;
+  transition:all 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+  opacity:0;
+}
+.card:nth-child(1){animation:fadeUp 0.7s 0.8s forwards;}
+.card:nth-child(2){animation:fadeUp 0.7s 0.95s forwards;}
+.card:nth-child(3){animation:fadeUp 0.7s 1.1s forwards;}
+
+.card:hover{
+  border-color:rgba(200,150,10,0.35);
+  background:rgba(255,255,255,0.06);
+  transform:translateY(-4px);
+  box-shadow:0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(200,150,10,0.15);
+}
+
+/* card accent line */
+.card-accent{
+  height:3px;
+  transition:opacity 0.3s;
+}
+.card-1 .card-accent{background:linear-gradient(90deg,#8b1a1a,#c04820,#8b1a1a);}
+.card-2 .card-accent{background:linear-gradient(90deg,#1a3a6b,#2a6ab0,#1a3a6b);}
+.card-3 .card-accent{background:linear-gradient(90deg,#c47a1a,#e8960a,#c47a1a);}
+
+.card-body{padding:28px 26px 24px;}
+
+.card-era{
+  font-size:9px;letter-spacing:4px;
+  font-family:'Noto Sans SC',sans-serif;font-weight:700;
+  margin-bottom:14px;
+  opacity:0.5;
+}
+.card-1 .card-era{color:#e88080;}
+.card-2 .card-era{color:#80a8e8;}
+.card-3 .card-era{color:#e8b060;}
+
+.card-num{
+  font-size:42px;font-weight:900;
+  line-height:1;margin-bottom:4px;
+  opacity:0.06;
+  position:absolute;right:20px;top:24px;
+  font-family:'Noto Serif SC',serif;
+  transition:opacity 0.3s;
+}
+.card:hover .card-num{opacity:0.1;}
+
+.card-title{
+  font-size:20px;font-weight:700;
+  letter-spacing:4px;
+  color:var(--paper);
+  margin-bottom:6px;
+  line-height:1.3;
+}
+
+.card-subtitle{
+  font-size:11px;letter-spacing:2px;
+  color:rgba(245,239,224,0.4);
+  font-family:'Noto Sans SC',sans-serif;
+  margin-bottom:16px;
+}
+
+.card-desc{
+  font-size:12.5px;line-height:1.9;
+  color:rgba(245,239,224,0.55);
+  font-family:'Noto Sans SC',sans-serif;
+  margin-bottom:20px;
+  letter-spacing:0.3px;
+}
+
+.card-tags{
+  display:flex;flex-wrap:wrap;gap:6px;
+  margin-bottom:22px;
+}
+.tag{
+  font-size:10px;padding:3px 10px;
+  border-radius:1px;
+  font-family:'Noto Sans SC',sans-serif;font-weight:600;
+  letter-spacing:1px;
+  border:1px solid;
+}
+.card-1 .tag{color:#e88080;border-color:rgba(232,128,128,0.25);background:rgba(139,26,26,0.15);}
+.card-2 .tag{color:#80a8e8;border-color:rgba(128,168,232,0.25);background:rgba(26,58,107,0.2);}
+.card-3 .tag{color:#e8b060;border-color:rgba(232,176,96,0.25);background:rgba(196,122,26,0.15);}
+
+.card-enter{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;font-family:'Noto Sans SC',sans-serif;font-weight:700;
+  letter-spacing:2px;
+  padding:8px 0;
+  border-bottom:1px solid;
+  transition:all 0.2s;
+  opacity:0.7;
+}
+.card:hover .card-enter{opacity:1;gap:12px;}
+.card-1 .card-enter{color:#e88080;border-color:rgba(232,128,128,0.3);}
+.card-2 .card-enter{color:#80a8e8;border-color:rgba(128,168,232,0.3);}
+.card-3 .card-enter{color:#e8b060;border-color:rgba(232,176,96,0.3);}
+
+/* hover glow bg */
+.card::before{
+  content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.35s;pointer-events:none;
+}
+.card-1::before{background:radial-gradient(ellipse at 50% 0%, rgba(139,26,26,0.12) 0%, transparent 70%);}
+.card-2::before{background:radial-gradient(ellipse at 50% 0%, rgba(26,58,107,0.15) 0%, transparent 70%);}
+.card-3::before{background:radial-gradient(ellipse at 50% 0%, rgba(196,122,26,0.12) 0%, transparent 70%);}
+.card:hover::before{opacity:1;}
+
+/* ── FEATURE ROW ── */
+.features{
+  position:relative;z-index:1;
+  max-width:800px;margin:0 auto;
+  padding:40px 24px 80px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:rgba(245,239,224,0.06);
+  opacity:0;animation:fadeUp 0.7s 1.3s forwards;
+}
+.feat{
+  padding:28px 24px;
+  background:var(--ink);
+  text-align:center;
+}
+.feat-icon{font-size:22px;margin-bottom:10px;}
+.feat-title{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--gold);font-family:'Noto Sans SC',sans-serif;margin-bottom:5px;}
+.feat-desc{font-size:11px;color:rgba(245,239,224,0.4);font-family:'Noto Sans SC',sans-serif;line-height:1.7;letter-spacing:0.5px;}
+
+/* ── FOOTER ── */
+footer{
+  position:relative;z-index:1;
+  text-align:center;padding:32px 24px 40px;
+  border-top:1px solid rgba(245,239,224,0.06);
+  font-size:11px;color:rgba(245,239,224,0.2);
+  font-family:'Noto Sans SC',sans-serif;letter-spacing:2px;
+}
+footer span{color:rgba(200,150,10,0.4);}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(18px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+@media(max-width:600px){
+  .hero{padding:56px 20px 40px;}
+  .hero-title{letter-spacing:6px;}
+  .features{grid-template-columns:1fr;}
+  .card-body{padding:22px 20px 20px;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-eyebrow">TONGJIAN · INTERACTIVE HISTORY</div>
+  <h1 class="hero-title"><em>通鉴</em>探史</h1>
+  <div class="hero-sub">以游戏之形 · 探历史之道</div>
+  <p class="hero-desc">
+    从《资治通鉴》出发，用原文精读、字词闯关、AI点评，<br>
+    让两千年前的智慧与今天的思考相遇。
+  </p>
+  <div class="hero-divider"><span>卷</span></div>
+  <div class="theme-badge">🎓 适合 IB 中文 · 七年级及以上</div>
+</header>
+
+<!-- CARDS -->
+<section class="cards-section">
+  <div class="section-label">当前篇章 · CHAPTERS</div>
+  <div class="cards-grid">
+
+    <a href="sanjiafenjin.html" class="card card-1">
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-num">一</div>
+        <div class="card-era">战国 · 前403年</div>
+        <div class="card-title">三家分晋</div>
+        <div class="card-subtitle">权力的边界 · 礼崩乐坏</div>
+        <p class="card-desc">
+          韩、赵、魏三家瓜分晋国，被天子正式承认为诸侯。
+          一个王朝的衰落，一段新时代的开始——
+          司马光为何把这一年作为《资治通鉴》的起点？
+        </p>
+        <div class="card-tags">
+          <span class="tag">原文精读</span>
+          <span class="tag">字词关卡</span>
+          <span class="tag">权力分析</span>
+        </div>
+        <div class="card-enter">进入游戏 →</div>
+      </div>
+    </a>
+
+    <a href="zouji.html" class="card card-2">
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-num">二</div>
+        <div class="card-era">战国 · 齐威王</div>
+        <div class="card-title">邹忌讽齐王</div>
+        <div class="card-subtitle">纳谏的艺术 · 以己喻君</div>
+        <p class="card-desc">
+          邹忌照镜自省，以比美之事讽谏齐王广开言路。
+          他没有正面批评，而是用自己的故事让国君
+          自己得出结论——这是最高明的说话艺术。
+        </p>
+        <div class="card-tags">
+          <span class="tag">原文精读</span>
+          <span class="tag">字词关卡</span>
+          <span class="tag">IB写作</span>
+        </div>
+        <div class="card-enter">进入游戏 →</div>
+      </div>
+    </a>
+
+    <a href="chulongtaihou.html" class="card card-3">
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-num">三</div>
+        <div class="card-era">战国 · 赵惠文王后</div>
+        <div class="card-title">触龙说赵太后</div>
+        <div class="card-subtitle">劝谏的智慧 · 计深远</div>
+        <p class="card-desc">
+          太后扬言朝进谏者吐唾沫，触龙却从腿疾聊到爱子，
+          最终让太后心甘情愿说出"恣君之所使之"。
+          比邹忌更深的心理战术，父母之爱子，则为之计深远。
+        </p>
+        <div class="card-tags">
+          <span class="tag">心理分析</span>
+          <span class="tag">对比阅读</span>
+          <span class="tag">IB写作</span>
+        </div>
+        <div class="card-enter">进入游戏 →</div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- FEATURES -->
+<div class="features">
+  <div class="feat">
+    <div class="feat-icon">📖</div>
+    <div class="feat-title">原文精读</div>
+    <div class="feat-desc">注释悬停即显<br>古文不再有障碍</div>
+  </div>
+  <div class="feat">
+    <div class="feat-icon">🎯</div>
+    <div class="feat-title">字词闯关</div>
+    <div class="feat-desc">错了可以重试<br>每题有详细解析</div>
+  </div>
+  <div class="feat">
+    <div class="feat-icon">🤖</div>
+    <div class="feat-title">AI即时点评</div>
+    <div class="feat-desc">写作题实时反馈<br>IB评分标准对标</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>通鉴探史 · <span>Tongjian Interactive</span> · 以史为鉴，可以知兴替</p>
+</footer>
+
+</body>
+</html>
