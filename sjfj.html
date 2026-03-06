@@ -562,6 +562,8 @@ let state={
   sessionGems:0,
   writingSubmitted:false
 };
+const saved = localStorage.getItem('quizGems');
+if (saved) state.gems = parseInt(saved);
 
 /* ════════════════════════════════════
    INIT
@@ -592,6 +594,7 @@ function renderHome(){
 }
 
 function updateStats(){
+  localStorage.setItem('sjfj_gems', state.gems);
   const total=10;
   const gems=document.getElementById('gem-display').children;
   for(let i=0;i<gems.length;i++){

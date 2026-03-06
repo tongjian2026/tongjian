@@ -453,12 +453,17 @@ const CMP_DATA={
 let ST={gems:0,done:new Set(),cur:null,vRight:0,vTotal:0,sessGems:0};
 const vSt={};
 
+// Load saved gems on page start
+const _savedGems = localStorage.getItem('zjf_gems');
+if (_savedGems) ST.gems = parseInt(_savedGems);
+
 /* ══════════════════════════════════
    INIT / STATS
 ══════════════════════════════════ */
 function init(){renderHome();updateStats();}
 
 function updateStats(){
+  localStorage.setItem('zjf_gems', ST.gems); // save gems whenever they update
   const gems=document.getElementById('gem-wrap').children;
   for(let i=0;i<gems.length;i++)gems[i].style.opacity=i<ST.gems?'1':'0.2';
   const ri=Math.min(Math.floor(ST.gems/3),RANKS.length-1);
