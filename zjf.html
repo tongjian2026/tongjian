@@ -216,6 +216,36 @@ body{
   .game-title{font-size:20px;}
 }
 </style>
+
+<style id="nav-inject">
+.site-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:999;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 20px;
+  background:rgba(10,10,18,0.92);
+  backdrop-filter:blur(12px);
+  border-top:1px solid rgba(200,150,10,0.2);
+  font-family:'Noto Sans SC',sans-serif;
+  gap:8px;
+}
+.site-nav a, .site-nav button{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;
+  font-size:11px;font-weight:700;letter-spacing:1px;
+  border-radius:2px;border:none;cursor:pointer;
+  text-decoration:none;transition:all 0.2s;white-space:nowrap;
+}
+.nav-home{background:rgba(200,150,10,0.15);color:rgba(200,150,10,0.9);border:1px solid rgba(200,150,10,0.25);}
+.nav-home:hover{background:rgba(200,150,10,0.25);color:#e8b820;}
+.nav-prev{background:rgba(255,255,255,0.06);color:rgba(245,239,224,0.6);border:1px solid rgba(255,255,255,0.1);}
+.nav-prev:hover{background:rgba(255,255,255,0.1);color:rgba(245,239,224,0.9);}
+.nav-next{background:rgba(200,150,10,0.9);color:#0a0a0f;}
+.nav-next:hover{background:#e8b820;transform:translateY(-1px);}
+.nav-spacer{flex:1;}
+/* push page content up so nav doesn't cover it */
+body{padding-bottom:58px;}
+</style>
+
 </head>
 <body>
 <div class="scroll">
@@ -794,5 +824,12 @@ function goHome(){showScreen('home');renderHome();}
 
 init();
 </script>
+
+<nav class="site-nav">
+  <a class="nav-prev" href="sjfj.html">← 三家分晋</a>
+  <a class="nav-home" href="index.html">⌂ 主目录</a>
+  <a class="nav-next" href="cls.html">触龙说赵太后 →</a>
+</nav>
+
 </body>
 </html>
